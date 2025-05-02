@@ -6,11 +6,11 @@ services:
     volumes:
       - ./:/mnt/locust
     command: >
-      locust -f locustfile.py
-            --master
-            --master-bind-host=0.0.0.0
-            --master-bind-port=4001
-            --web-host=0.0.0.0
+      locust -f locustfile.py \
+            --master \
+            --master-bind-host=0.0.0.0 \
+            --master-bind-port=4001 \
+            --web-host=0.0.0.0 \
             --web-port=8089
     ports:
       - "4001:4001"
@@ -31,4 +31,6 @@ services:
       - grafana-storage:/var/lib/grafana
 
 volumes:
-  grafana-storage: []
+  grafana-storage:
+    # Empty mapping indicates a named volume with default settings
+    {}
