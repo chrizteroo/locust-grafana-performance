@@ -1,5 +1,21 @@
 version: '3.7'
 services:
+  locust:
+    image: locustio/locust:2.36.2
+    working_dir: /mnt/locust
+    volumes:
+      - ./:/mnt/locust
+    command: >
+      locust -f locustfile.py
+            --master
+            --master-bind-host=0.0.0.0
+            --master-bind-port=4001
+            --web-host=0.0.0.0
+            --web-port=8089
+    ports:
+      - "4001:4001"
+      - "8089:8089"
+
   prometheus:
     image: prom/prometheus:v2.50.0
     volumes:
@@ -15,4 +31,4 @@ services:
       - grafana-storage:/var/lib/grafana
 
 volumes:
-  grafana-storage:
+  grafana-storage: []
