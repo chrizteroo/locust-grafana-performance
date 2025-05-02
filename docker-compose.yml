@@ -1,36 +1,24 @@
-version: '3.7'
+version: "3.8"
+
 services:
-  locust:
-    image: locustio/locust:2.36.2
-    working_dir: /mnt/locust
-    volumes:
-      - ./:/mnt/locust
+  master:
+    image: locustio/locust:latest
+    platform: linux/amd64
     command: >
-      locust -f locustfile.py \
-            --master \
-            --master-bind-host=0.0.0.0 \
-            --master-bind-port=4001 \
-            --web-host=0.0.0.0 \
-            --web-port=8089
+      -f /locust/load_test.py
+      --master
+      --expect-workers 3
     ports:
-      - "4001:4001"
       - "8089:8089"
-
-  prometheus:
-    image: prom/prometheus:v2.50.0
+      - "5557:5557"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
+      - ../src:/locust:ro
 
-  grafana:
-    image: grafana/grafana:10.1.0
+  exporter:
+    image: containersol/locust_exporter
+    platform: linux/amd64
+    environment:
+      - LOCUST_EXPORTER_LOCUST_HOST=http://master:8089
+      - LOCUST_EXPORTER_WEB_LISTEN_ADDRESS=:9646
     ports:
-      - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
-
-volumes:
-  grafana-storage:
-    # Empty mapping indicates a named volume with default settings
-    {}
+      - "9646:9646"
